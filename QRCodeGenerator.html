@@ -1,0 +1,206 @@
+<html>
+    <head>
+        <title>QR Code Generator</title>
+        <script language="javascript">
+            function GenerateQRCodes()
+            {
+                var tableQRCodes = document.getElementById('tableQRCodes');
+                var numberOfRows = tableQRCodes.rows.length;
+                for (var rowIndex=6; rowIndex<numberOfRows; rowIndex++)
+                {
+                    tableQRCodes.deleteRow(6);
+                }
+
+                var txtSupplierCode1 = document.getElementById('txtSupplierCode_1_1').value;
+                var txtSupplierCode2 = document.getElementById('txtSupplierCode_1_2').value;
+                var txtSupplierCode3 = document.getElementById('txtSupplierCode_1_3').value;
+                var txtPalletNumber = document.getElementById('txtPalletNumber_1').value;
+                if (txtPalletNumber == '')
+                {
+                    alert('Please enter the pallet number');
+                    document.getElementById('txtPalletNumber_1').focus();
+                    return;
+                }
+                var txtGrossWeight = document.getElementById('txtGrossWeight_1').value;
+                var txtNetWeight = document.getElementById('txtNetWeight_1').value;
+                var txtType = document.getElementById('txtType_1').value;
+                var qrCodesCount = document.getElementById('txtQRCodesCount').value;
+                
+                if (qrCodesCount == '')
+                {
+                    alert('Please enter the total number of QR Codes to generate');
+                    document.getElementById('txtQRCodesCount').focus();
+                    return;
+                }
+
+                for (var qrCount=2; qrCount<=qrCodesCount; qrCount++)
+                {
+                    txtPalletNumber = (parseInt(txtPalletNumber) + 1).toString();
+                    //QR Code
+                    var htmlContentQRCode = '<td>QR Code</td><td><img id = "imgQRCode_' + qrCount.toString() + '" src="OnlyQRCode.jpg" /></td>';
+
+                    //Supplier Code
+                    var htmlContentSupplierCode = '<td>CODE:</td><td><input type="text" id="txtSupplierCode_' + qrCount.toString() + '_1" size="6" value="' + txtSupplierCode1 + '" />';
+                    htmlContentSupplierCode = htmlContentSupplierCode + '/<input type="text" id="txtSupplierCode_' + qrCount.toString() + '_2" size="3" value="' + txtSupplierCode2 + '" />';
+                    htmlContentSupplierCode = htmlContentSupplierCode + '/<input type="text" id="txtSupplierCode_' + qrCount.toString() + '_3" size="3" value="' + txtSupplierCode3 + '" />';
+                    htmlContentSupplierCode = htmlContentSupplierCode + '</td>';
+
+                    //Pallet Number
+                    var htmlContentPalletNumber = '<td>PALLET NO.:</td>';
+                    htmlContentPalletNumber = htmlContentPalletNumber + '<td><input type="text" id="txtPalletNumber_' + qrCount.toString() + '" size="10" value="' + txtPalletNumber + '" /></td>';
+
+                    //Gross Weight
+                    var htmlContentGrossWeight = '<td>GROSS WEIGHT:</td>';
+                    htmlContentGrossWeight = htmlContentGrossWeight + '<td><input type="text" id="txtGrossWeight_' + qrCount.toString() + '" size="10" value="' + txtGrossWeight + '" /></td>';
+
+                    //Net Weight
+                    var htmlContentNetWeight = '<td>NET WEIGHT:</td><td><input type="text" id="txtNetWeight_' + qrCount.toString() + '" size="10" value="' + txtNetWeight + '" /></td>';
+
+                    //Type
+                    var htmlContentType = '<td>TYPE:</td><td><input type="text" id="txtType_' + qrCount.toString() + '" size="10" value="' + txtType + '" /></td>';
+
+                    var tableRef = document.getElementById('tableQRCodes').getElementsByTagName('tbody')[0];
+
+                    var newRow = tableRef.insertRow(tableRef.rows.length);
+                    newRow.innerHTML = '&nbsp;';
+                    newRow = tableRef.insertRow(tableRef.rows.length);
+                    newRow.innerHTML = htmlContentQRCode;
+                    newRow = tableRef.insertRow(tableRef.rows.length);
+                    newRow.innerHTML = htmlContentSupplierCode;
+                    newRow = tableRef.insertRow(tableRef.rows.length);
+                    newRow.innerHTML = htmlContentPalletNumber;
+                    newRow = tableRef.insertRow(tableRef.rows.length);
+                    newRow.innerHTML = htmlContentGrossWeight;
+                    newRow = tableRef.insertRow(tableRef.rows.length);
+                    newRow.innerHTML = htmlContentNetWeight;
+                    newRow = tableRef.insertRow(tableRef.rows.length);
+                    newRow.innerHTML = htmlContentType;
+                }
+                QRCodeSizeChanged();
+            }
+
+            function QRCodeSizeChanged()
+            {
+                var newQRCodeSize = document.getElementById('selectQRCodeSize').options[document.getElementById('selectQRCodeSize').selectedIndex].value;
+                var imgQRCodes = document.getElementsByTagName('img');
+                for (var imgIndex=1; imgIndex <= imgQRCodes.length; imgIndex++)
+                {
+                    var oneQRCodeImage = document.getElementById('imgQRCode_' + imgIndex);
+                    if (newQRCodeSize == '100x100')
+                    {
+                        oneQRCodeImage.style.width="100px";
+                        oneQRCodeImage.style.height="100px";
+                    }
+                    if (newQRCodeSize == '150x150')
+                    {
+                        oneQRCodeImage.style.width="150px";
+                        oneQRCodeImage.style.height="150px";
+                    }
+                    if (newQRCodeSize == '200x200')
+                    {
+                        oneQRCodeImage.style.width="200px";
+                        oneQRCodeImage.style.height="200px";
+                    }
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <table id="tableMain">
+            <tr>
+                <td>
+                    Number of QR Codes Required: <input type="text" id="txtQRCodesCount" size="10" />
+                </td>
+                <td>
+                    QR Code Size: 
+                    <select id="selectQRCodeSize" onchange="javascript:QRCodeSizeChanged();">
+                        <option value="100x100">100px X 100px</option>
+                        <option value="150x150">150px X 150px</option>
+                        <option value="200x200">200px X 200px</option>
+                    </select>
+                </td>
+                <td>
+                    &nbsp;
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <input type="button" value="Generate QR Codes" id="btnGenerateQRCodes" onclick="javascript:GenerateQRCodes();" />
+                            </td>
+                            <td>
+                                <input type="button" value="Print QR Codes" id="btnPrintQRCodes" />
+                            </td>
+                        </tr>
+                    </table>    
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table id="tableQRCodes" border="0">
+                        <tr>
+                            <td>
+                                QR Code
+                            </td>
+                            <td>
+                                <img id="imgQRCode_1" src="OnlyQRCode.jpg" style="width: 100px; height: 100px;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                CODE:
+                            </td>
+                            <td>
+                                <input type="text" id="txtSupplierCode_1_1" size="6" />
+                                /
+                                <input type="text" id="txtSupplierCode_1_2" size="3" />
+                                /
+                                <input type="text" id="txtSupplierCode_1_3" size="3" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                PALLET NO.:
+                            </td>
+                            <td>
+                                <input type="text" id="txtPalletNumber_1" size="10" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                GROSS WEIGHT:
+                            </td>
+                            <td>
+                                <input type="text" id="txtGrossWeight_1" size="10" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                NET WEIGHT:
+                            </td>
+                            <td>
+                                <input type="text" id="txtNetWeight_1" size="10" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                TYPE:
+                            </td>
+                            <td>
+                                <input type="text" id="txtType_1" size="10" />
+                            </td>
+                        </tr>
+                    <table>
+                </td>
+            </tr>   
+            <tr>
+                <td>&nbsp;</td>
+            </tr>
+        </table>
+    </body>
+</html>
