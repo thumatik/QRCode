@@ -69,9 +69,9 @@
                     var htmlContentQRCode2 = '<tr><td colspan="2" style="text-align: center;"><img id="imgQRCode_' + qrCount.toString() + '" src="OnlyQRCode.jpg" style="width: ' + qrCodeSizeSelected + 'px; height: ' + qrCodeSizeSelected + 'px;" /></td></tr>';
 
                     //Supplier Code
-                    var htmlContentSupplierCode = '<td>CODE:</td><td><input type="text" id="txtSupplierCode_' + qrCount.toString() + '_1" size="6" value="' + txtSupplierCode1 + '" onkeypress="javascript:return KeyPressedEvent(event)" />';
-                    htmlContentSupplierCode = htmlContentSupplierCode + '/<input type="text" id="txtSupplierCode_' + qrCount.toString() + '_2" size="3" value="' + txtSupplierCode2 + '" onkeypress="javascript:return KeyPressedEvent(event)"  />';
-                    htmlContentSupplierCode = htmlContentSupplierCode + '/<input type="text" id="txtSupplierCode_' + qrCount.toString() + '_3" size="3" value="' + txtSupplierCode3 + '" onkeypress="javascript:return KeyPressedEvent(event)" />';
+                    var htmlContentSupplierCode = '<td>CODE:</td><td><input type="text" id="txtSupplierCode_' + qrCount.toString() + '_1" size="6" maxlength="8" value="' + txtSupplierCode1 + '" onkeypress="javascript:return KeyPressedEvent(event)" />';
+                    htmlContentSupplierCode = htmlContentSupplierCode + '/<input type="text" id="txtSupplierCode_' + qrCount.toString() + '_2" size="3" maxlength="3" value="' + txtSupplierCode2 + '" onkeypress="javascript:return KeyPressedEvent(event)"  />';
+                    htmlContentSupplierCode = htmlContentSupplierCode + '/<input type="text" id="txtSupplierCode_' + qrCount.toString() + '_3" size="3" maxlength="3" value="' + txtSupplierCode3 + '" onkeypress="javascript:return KeyPressedEvent(event)" />';
                     htmlContentSupplierCode = htmlContentSupplierCode + '</td>';
 
                     //Pallet Number
@@ -80,10 +80,10 @@
 
                     //Gross Weight
                     var htmlContentGrossWeight = '<td>GROSS WEIGHT:</td>';
-                    htmlContentGrossWeight = htmlContentGrossWeight + '<td><input type="text" id="txtGrossWeight_' + qrCount.toString() + '" size="10" onkeypress="javascript:return KeyPressedEvent(event)" /></td>';
+                    htmlContentGrossWeight = htmlContentGrossWeight + '<td><input type="text" id="txtGrossWeight_' + qrCount.toString() + '" size="10" onkeypress="javascript:return KeyPressedEvent(event)" /> Kgs</td>';
 
                     //Net Weight
-                    var htmlContentNetWeight = '<td>NET WEIGHT:</td><td><input type="text" id="txtNetWeight_' + qrCount.toString() + '" size="10" onkeypress="javascript:return KeyPressedEvent(event)" /></td>';
+                    var htmlContentNetWeight = '<td>NET WEIGHT:</td><td><input type="text" id="txtNetWeight_' + qrCount.toString() + '" size="10" onkeypress="javascript:return KeyPressedEvent(event)" /> Kgs</td>';
 
                     //Type
                     //var htmlContentType = '<td>TYPE:</td><td><input type="text" id="txtType_' + qrCount.toString() + '" size="10" value="' + txtType + '" /></td>';
