@@ -1,9 +1,68 @@
-<html> 
+<html>
     <head>
-        <title>QR Code Generator</title>
+        <title>QR Code Generator - Shakti Cords Ltd</title>
+        <script src="QRious_QRCodeGenerator.js"></script>
         <script language="javascript">
+            var tableValues = [];
+            
+            function PrintQRCode(thisManyQRCodeInOnePage)
+            {
+                localStorage['GeneratedQRCodes'] = JSON.stringify(tableValues);
+                localStorage['qrCodeTable'] = document.getElementById('tableQRCodes').getElementsByTagName('tbody')[0].innerHTML;
+                localStorage['CodeSize'] = document.getElementById('selectQRCodeSize').options[document.getElementById('selectQRCodeSize').selectedIndex].value;
+                window.open('QRCodePrinter.html');
+            }
+
+            function GenerateQRCodeForAll(isThisForAll, onlyForThisOne) 
+            {
+                var qrCodesCount = document.getElementById('txtQRCodesCount').value;
+                var startIndex = 0;
+                var endIndex = 0;
+                if (isThisForAll)
+                {
+                    startIndex = 0;
+                    endIndex = qrCodesCount;
+                }
+                else
+                {
+                    startIndex = onlyForThisOne;
+                    endIndex = parseInt(startIndex) + 1;
+                }
+                console.log(isThisForAll, onlyForThisOne, startIndex, endIndex);
+                var qrCodeSizeIs = document.getElementById('selectQRCodeSize').options[document.getElementById('selectQRCodeSize').selectedIndex].value;
+                for (var qrCodeIndex=startIndex; qrCodeIndex<endIndex; qrCodeIndex++)
+                {
+                    var txtSupplierCode1 = document.getElementById('txtSupplierCode_' + qrCodeIndex + '_1').value;
+                    var txtSupplierCode2 = document.getElementById('txtSupplierCode_' + qrCodeIndex + '_2').value;
+                    var txtSupplierCode3 = document.getElementById('txtSupplierCode_' + qrCodeIndex + '_3').value;
+                    var txtPalletNumber = document.getElementById('txtPalletNumber_' + qrCodeIndex).value;
+                    var txtGrossWeight = document.getElementById('txtGrossWeight_' + qrCodeIndex).value;
+                    var txtNetWeight = document.getElementById('txtNetWeight_' + qrCodeIndex).value;
+                    qrtext = txtSupplierCode1 + '/' + txtSupplierCode2 + '/' + txtSupplierCode3 + '|' + txtPalletNumber + '|' + txtGrossWeight + '|' + txtNetWeight;
+                    qr = new QRious({
+                        element: document.getElementById('qr_code_' + qrCodeIndex),
+                        size: 200,
+                        value: 'Shakti Cords - QR Generator'
+                    });
+                    qr.set({
+                        foreground: 'black',
+                        size: qrCodeSizeIs,
+                        value: qrtext
+                    });
+                }
+            }
+
             function GenerateQRCodes()
             {
+                var alreadyGenerated = document.getElementById('hidAlreadyGenerated').value;
+                if (alreadyGenerated == '1')
+                {
+                    if (!confirm("You have already generated the codes, and would have modified the details such as Gross Weight, Net Weight etc.\n\nGenerating again will remove your changes.\n\n\nPress OK to continue generating new ones.\n\nPress Cancel to stay here without any changes."))
+                    {
+                        return;
+                    }
+                }
+                document.getElementById('hidAlreadyGenerated').value = '1';
                 var tableQRCodes = document.getElementById('tableQRCodes');
                 var numberOfRows = tableQRCodes.rows.length;
                 for (var rowIndex=0; rowIndex<numberOfRows; rowIndex++)
@@ -26,6 +85,8 @@
                     document.getElementById('txtQRCodesCount').focus();
                     return;
                 }
+
+                tableValues = [qrCodesCount];
 
                 var tableRef1 = document.getElementById('tableQRCodes').getElementsByTagName('tbody')[0];
                 var numberOfTDs = 0;
@@ -66,24 +127,31 @@
                     var qrCodeSizeSelected = document.getElementById('selectQRCodeSize').options[document.getElementById('selectQRCodeSize').selectedIndex].value;
                     //var htmlContentQRCode = '<td>QR Code</td><td><img id = "imgQRCode_' + qrCount.toString() + '" src="OnlyQRCode.jpg" /></td>';
                     var htmlContentQRCode1 = '<tr><td colspan="2" style="text-align: center;">FOR INDUSTRIAL USE</td></tr>';
-                    var htmlContentQRCode2 = '<tr><td colspan="2" style="text-align: center;"><img id="imgQRCode_' + qrCount.toString() + '" src="OnlyQRCode.jpg" style="width: ' + qrCodeSizeSelected + 'px; height: ' + qrCodeSizeSelected + 'px;" /></td></tr>';
-
+                    //var htmlContentQRCode2 = '<tr><td colspan="2" style="text-align: center;"><img id="imgQRCode_' + qrCount.toString() + '" src="OnlyQRCode.jpg" style="width: ' + qrCodeSizeSelected + 'px; height: ' + qrCodeSizeSelected + 'px;" /></td></tr>';
+                    var htmlContentQRCode2 = '<tr><td colspan="2" style="text-align: center;"><canvas id="qr_code_' + qrCount.toString() + '"></canvas></td></tr>';
+                    
                     //Supplier Code
-                    var htmlContentSupplierCode = '<td>CODE:</td><td><input type="text" id="txtSupplierCode_' + qrCount.toString() + '_1" size="6" maxlength="8" value="' + txtSupplierCode1 + '" onkeypress="javascript:return KeyPressedEvent(event)" />';
-                    htmlContentSupplierCode = htmlContentSupplierCode + '/<input type="text" id="txtSupplierCode_' + qrCount.toString() + '_2" size="3" maxlength="3" value="' + txtSupplierCode2 + '" onkeypress="javascript:return KeyPressedEvent(event)"  />';
-                    htmlContentSupplierCode = htmlContentSupplierCode + '/<input type="text" id="txtSupplierCode_' + qrCount.toString() + '_3" size="3" maxlength="3" value="' + txtSupplierCode3 + '" onkeypress="javascript:return KeyPressedEvent(event)" />';
+                    var htmlContentSupplierCode = '<td>CODE:</td><td><input type="text" id="txtSupplierCode_' + qrCount.toString() + '_1" size="6" maxlength="8" value="' + txtSupplierCode1 + '" onkeypress="javascript:return KeyPressedEvent(event)" onkeyup="javascript:return KeyUpEvent(event)" />';
+                    htmlContentSupplierCode = htmlContentSupplierCode + '/<input type="text" id="txtSupplierCode_' + qrCount.toString() + '_2" size="3" maxlength="3" value="' + txtSupplierCode2 + '" onkeypress="javascript:return KeyPressedEvent(event)" onkeyup="javascript:return KeyUpEvent(event)"  />';
+                    htmlContentSupplierCode = htmlContentSupplierCode + '/<input type="text" id="txtSupplierCode_' + qrCount.toString() + '_3" size="3" maxlength="3" value="' + txtSupplierCode3 + '" onkeypress="javascript:return KeyPressedEvent(event)" onkeyup="javascript:return KeyUpEvent(event)" />';
                     htmlContentSupplierCode = htmlContentSupplierCode + '</td>';
+
+                    tableValues[qrCount] = [6];
+                    tableValues[qrCount][0] = txtSupplierCode1;
+                    tableValues[qrCount][1] = txtSupplierCode2;
+                    tableValues[qrCount][2] = txtSupplierCode3;
+                    tableValues[qrCount][3] = txtPalletNumber;
 
                     //Pallet Number
                     var htmlContentPalletNumber = '<td id="typeOfMaterial_' + qrCount.toString() + '"">PALLET NO.:</td>';
-                    htmlContentPalletNumber = htmlContentPalletNumber + '<td><input type="text" id="txtPalletNumber_' + qrCount.toString() + '" size="10" value="' + txtPalletNumber + '" onkeypress="javascript:return KeyPressedEvent(event)" /></td>';
+                    htmlContentPalletNumber = htmlContentPalletNumber + '<td><input type="text" id="txtPalletNumber_' + qrCount.toString() + '" size="10" value="' + txtPalletNumber + '" onkeypress="javascript:return KeyPressedEvent(event)" onkeyup="javascript:return KeyUpEvent(event)" /></td>';
 
                     //Gross Weight
                     var htmlContentGrossWeight = '<td>GROSS WEIGHT:</td>';
-                    htmlContentGrossWeight = htmlContentGrossWeight + '<td><input type="text" id="txtGrossWeight_' + qrCount.toString() + '" size="10" onkeypress="javascript:return KeyPressedEvent(event)" /> Kgs</td>';
+                    htmlContentGrossWeight = htmlContentGrossWeight + '<td><input type="text" id="txtGrossWeight_' + qrCount.toString() + '" size="10" onkeypress="javascript:return KeyPressedEvent(event)" onkeyup="javascript:return KeyUpEvent(event)" /> Kgs</td>';
 
                     //Net Weight
-                    var htmlContentNetWeight = '<td>NET WEIGHT:</td><td><input type="text" id="txtNetWeight_' + qrCount.toString() + '" size="10" onkeypress="javascript:return KeyPressedEvent(event)" /> Kgs</td>';
+                    var htmlContentNetWeight = '<td>NET WEIGHT:</td><td><input type="text" id="txtNetWeight_' + qrCount.toString() + '" size="10" onkeypress="javascript:return KeyPressedEvent(event)" onkeyup="javascript:return KeyUpEvent(event)" /> Kgs</td>';
 
                     //Type
                     //var htmlContentType = '<td>TYPE:</td><td><input type="text" id="txtType_' + qrCount.toString() + '" size="10" value="' + txtType + '" /></td>';
@@ -108,9 +176,15 @@
                     //newRow.innerHTML = htmlContentType;
                 }
                 //QRCodeSizeChanged();
+                GenerateQRCodeForAll(true, qrCodesCount);
             }
 
             function QRCodeSizeChanged()
+            {
+                GenerateQRCodeForAll(true, 0);
+            }
+
+            function QRCodeSizeChanged_Org()
             {
                 var newQRCodeSize = document.getElementById('selectQRCodeSize').options[document.getElementById('selectQRCodeSize').selectedIndex].value;
                 var imgQRCodes = document.getElementsByTagName('img');
@@ -138,12 +212,49 @@
             function KeyPressedEvent(evt)
             {
                 var charCode = (evt.which) ? evt.which : evt.keyCode;
-                //alert(charCode);
-                //if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57))
                 if (charCode >= 48 && charCode <= 57)
                 {
+                    // var sourceElements = evt.target.id.split('_');
+                    // var elementIndex = sourceElements[1];
+                    // GenerateQRCodeForAll(false, elementIndex);
                     return true;
                 }
+
+                return false;
+            }
+
+            function KeyUpEvent(evt)
+            {
+                //console.log('event is ', evt);
+                var sourceElements = evt.target.id.split('_');
+                var elementIndex = sourceElements[1];
+                GenerateQRCodeForAll(false, elementIndex);
+
+                if (sourceElements[0] == 'txtSupplierCode')
+                {
+                    tableValues[sourceElements[1]][parseInt(sourceElements[2])-1] = evt.target.value;
+                }
+                else
+                {
+                    if (sourceElements[0] == 'txtPalletNumber')
+                    {
+                        tableValues[sourceElements[1]][3] = evt.target.value;
+                    }
+                    else
+                    {
+                        if (sourceElements[0] == 'txtGrossWeight')
+                        {
+                            tableValues[sourceElements[1]][4] = evt.target.value;
+                        }   
+                        else
+                        {
+                            tableValues[sourceElements[1]][5] = evt.target.value;
+                        }
+                    }
+                }
+
+                //localStorage['GeneratedQRCodes'] = document.getElementById('tableQRCodes').getElementsByTagName('tbody')[0].innerHTML;
+                localStorage['GeneratedQRCodes'] = JSON.stringify(tableValues);
 
                 return false;
             }
@@ -241,12 +352,11 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="text-align: right;">
+                            <!-- <td style="text-align: right;"> -->
+                            <td colspan="2" style="text-align: center;">
                                 <input type="button" value="Generate QR Codes" id="btnGenerateQRCodes" onclick="javascript:GenerateQRCodes();" /> &nbsp;
-                            </td>
-                            <td style="text-align: left;">
-                                <input type="button" value="Print QR Codes - 1/Page" id="btnPrintQRCodesOnePerPage" />
-                                <input type="button" value="Print QR Codes - 2/Page" id="btnPrintQRCodesTwoPerPage" />
+                                <input type="button" value="Print QR Codes - 1 per Page" id="btnPrintQRCodesOnePerPage" onclick="javascript:PrintQRCode(1);"/> &nbsp;
+                                <input type="button" value="Print QR Codes - 2 per Page" id="btnPrintQRCodesTwoPerPage" />
                             </td>
                         </tr>
                     </table>
@@ -270,7 +380,8 @@
                                     </tr>
                                     <tr>
                                         <td colspan="2" style="text-align: center;">
-                                            <img id="imgQRCode_1" src="OnlyQRCode.jpg" style="width: 200px; height: 200px;" />
+                                            <!-- <img id="imgQRCode_1" src="OnlyQRCode.jpg" style="width: 200px; height: 200px;" /> -->
+                                            <canvas id="qr_code_1"></canvas>
                                         </td>
                                     </tr>
                                     <tr>
@@ -319,5 +430,17 @@
                 <td>&nbsp;</td>
             </tr>
         </table>
+        <input type="hidden" id="hidAlreadyGenerated" value="0" />
     </body>
+    <script>
+        /* JS comes here */
+        var qr;
+        (function() {
+                qr = new QRious({
+                element: document.getElementById('qr-code'),
+                size: 200,
+                value: 'Shakti Cords - QR Generator'
+            });
+        })();
+    </script>
 </html>

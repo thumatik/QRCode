@@ -1,0 +1,84 @@
+<html>
+    <head>
+        <title>QR Code Printer - Shakti Cords Ltd</title>
+        <script src="QRious_QRCodeGenerator.js"></script>
+        <script language="javascript">
+            function BodyOnLoad()
+            {
+                var GeneratedQRCodes = localStorage['qrCodeTable'];
+                var table = document.createElement('table');
+                table.innerHTML = GeneratedQRCodes;
+                var rows = table.rows;
+                var tableWithQRCodes = document.getElementById('tableQRCodes');
+                for (var rowIndex=0; rowIndex<rows.length; rowIndex++)
+                {
+                    var rowChildren = rows[rowIndex].children;
+                    for (var colIndex=0; colIndex<rowChildren.length; colIndex++)
+                    {
+                        var oneRow = tableWithQRCodes.insertRow(tableWithQRCodes.rows.length);
+                        oneRow.innerHTML = '<td>' + rowChildren[colIndex].innerHTML + '</td>';
+                    }                
+                }
+                var tableValues = JSON.parse(localStorage['GeneratedQRCodes']);
+                //console.log(tableValues.length, document.getElementById('txtSupplierCode_0_1').value);
+                //console.log('tableWithQRCodes.rows.length', tableWithQRCodes.rows.length);
+                for (var rowIndex1=0; rowIndex1<tableValues.length; rowIndex1++)
+                {
+                    document.getElementById('txtSupplierCode_' + rowIndex1 + '_1').value = tableValues[rowIndex1][0];
+                    document.getElementById('txtSupplierCode_' + rowIndex1 + '_2').value = tableValues[rowIndex1][1];
+                    document.getElementById('txtSupplierCode_' + rowIndex1 + '_3').value = tableValues[rowIndex1][2];
+                    document.getElementById('txtPalletNumber_' + rowIndex1).value = tableValues[rowIndex1][3];
+                    document.getElementById('txtGrossWeight_' + rowIndex1).value = tableValues[rowIndex1][4]?tableValues[rowIndex1][4]:'';
+                    document.getElementById('txtNetWeight_' + rowIndex1).value = tableValues[rowIndex1][5]?tableValues[rowIndex1][5]:'';
+                }
+                GenerateQRCodeForAll(true);
+                window.print();
+            }
+
+            function GenerateQRCodeForAll(isThisForAll, onlyForThisOne) 
+            {
+                var qrCodesCount = document.getElementById('tableQRCodes').rows.length;
+                var startIndex = 0;
+                var endIndex = 0;
+                if (isThisForAll)
+                {
+                    startIndex = 0;
+                    endIndex = qrCodesCount;
+                }
+                else
+                {
+                    startIndex = onlyForThisOne;
+                    endIndex = parseInt(startIndex) + 1;
+                }
+                // console.log(isThisForAll, onlyForThisOne, startIndex, endIndex);
+                var qrCodeSizeIs = localStorage['CodeSize'];
+                var tableValues = JSON.parse(localStorage['GeneratedQRCodes']);
+                for (var qrCodeIndex=startIndex; qrCodeIndex<tableValues.length; qrCodeIndex++)
+                {
+                    var txtSupplierCode1 = document.getElementById('txtSupplierCode_' + qrCodeIndex + '_1').value;
+                    var txtSupplierCode2 = document.getElementById('txtSupplierCode_' + qrCodeIndex + '_2').value;
+                    var txtSupplierCode3 = document.getElementById('txtSupplierCode_' + qrCodeIndex + '_3').value;
+                    var txtPalletNumber = document.getElementById('txtPalletNumber_' + qrCodeIndex).value;
+                    var txtGrossWeight = document.getElementById('txtGrossWeight_' + qrCodeIndex).value;
+                    var txtNetWeight = document.getElementById('txtNetWeight_' + qrCodeIndex).value;
+                    qrtext = txtSupplierCode1 + '/' + txtSupplierCode2 + '/' + txtSupplierCode3 + '|' + txtPalletNumber + '|' + txtGrossWeight + '|' + txtNetWeight;
+                    var qr = new QRious({
+                        element: document.getElementById('qr_code_' + qrCodeIndex),
+                        size: 200,
+                        value: 'Shakti Cords - QR Generator'
+                    });
+                    qr.set({
+                        foreground: 'black',
+                        size: qrCodeSizeIs,
+                        value: qrtext
+                    });
+                }
+            }
+        </script>
+    </head>
+    <body onload="javascript:BodyOnLoad();">
+        <table id="tableQRCodes">
+
+        </table>
+    </body>
+</html>
