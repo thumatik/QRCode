@@ -1,22 +1,57 @@
 <html>
     <head>
+        <style>
+            @media print {
+                .pagebreak { page-break-before: always; } /* page-break-after works, as well */
+            }
+        </style>
         <title>QR Code Printer - Shakti Cords Ltd</title>
         <script src="QRious_QRCodeGenerator.js"></script>
         <script language="javascript">
+            var HowManyQRCodesInOnePage = localStorage['HowManyQRCodesInOnePage'] ;
+
             function BodyOnLoad()
             {
                 var GeneratedQRCodes = localStorage['qrCodeTable'];
                 var table = document.createElement('table');
                 table.innerHTML = GeneratedQRCodes;
                 var rows = table.rows;
+                var mainRowsIndex = 1;
                 var tableWithQRCodes = document.getElementById('tableQRCodes');
                 for (var rowIndex=0; rowIndex<rows.length; rowIndex++)
                 {
                     var rowChildren = rows[rowIndex].children;
-                    for (var colIndex=0; colIndex<rowChildren.length; colIndex++)
+                    var oneRow;
+                    if (HowManyQRCodesInOnePage == 2)
                     {
-                        var oneRow = tableWithQRCodes.insertRow(tableWithQRCodes.rows.length);
-                        oneRow.innerHTML = '<td>' + rowChildren[colIndex].innerHTML + '</td>';
+                        //oneRow = tableWithQRCodes.insertRow(tableWithQRCodes.rows.length);
+                        //oneRow.innerHTML = '';
+                    }
+                    for (var colIndex=1; colIndex<=rowChildren.length; colIndex++)
+                    {
+                        if (HowManyQRCodesInOnePage == 1 || (mainRowsIndex % 2) > 0)
+                        {
+                            console.log('colIndex is ', colIndex);
+                            
+                            oneRow = tableWithQRCodes.insertRow(tableWithQRCodes.rows.length);
+                        }
+                        //oneRow.innerHTML = oneRow.innerHTML + '<td>' + rowChildren[parseInt(colIndex)-1].innerHTML;
+                        if (HowManyQRCodesInOnePage == 1)
+                        {
+                            oneRow.innerHTML = oneRow.innerHTML + '<td>' + rowChildren[parseInt(colIndex)-1].innerHTML + '<div class="pagebreak"> </div></td>';
+                        }
+                        else
+                        {
+                            if ((mainRowsIndex % 2) == 0)
+                            {
+                                oneRow.innerHTML = oneRow.innerHTML + '<td>' + rowChildren[parseInt(colIndex)-1].innerHTML + '<div class="pagebreak"> </div></td>';
+                            }
+                            else
+                            {
+                                oneRow.innerHTML = oneRow.innerHTML + '<td>' + rowChildren[parseInt(colIndex)-1].innerHTML + '</td>';
+                            }
+                        }
+                        mainRowsIndex++;
                     }                
                 }
                 var tableValues = JSON.parse(localStorage['GeneratedQRCodes']);
@@ -24,6 +59,7 @@
                 //console.log('tableWithQRCodes.rows.length', tableWithQRCodes.rows.length);
                 for (var rowIndex1=0; rowIndex1<tableValues.length; rowIndex1++)
                 {
+                    //console.log('rowIndex1 is ', rowIndex1);
                     document.getElementById('txtSupplierCode_' + rowIndex1 + '_1').value = tableValues[rowIndex1][0];
                     document.getElementById('txtSupplierCode_' + rowIndex1 + '_2').value = tableValues[rowIndex1][1];
                     document.getElementById('txtSupplierCode_' + rowIndex1 + '_3').value = tableValues[rowIndex1][2];
@@ -32,7 +68,23 @@
                     document.getElementById('txtNetWeight_' + rowIndex1).value = tableValues[rowIndex1][5]?tableValues[rowIndex1][5]:'';
                 }
                 GenerateQRCodeForAll(true);
+
+                var allTheTextBoxes = document.getElementsByTagName('input');
+                for (var textBoxIndex=0; textBoxIndex<allTheTextBoxes.length; textBoxIndex++)
+                {
+                    allTheTextBoxes[textBoxIndex].addEventListener('focus', (event) => {event.target.blur();});
+                }
+
                 window.print();
+            }
+
+            function KeyPressedEvent(evt)
+            {
+                return true;
+            }
+
+            function KeyUpEvent(evt)
+            {
             }
 
             function GenerateQRCodeForAll(isThisForAll, onlyForThisOne) 

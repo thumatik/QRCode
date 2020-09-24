@@ -5,8 +5,19 @@
         <script language="javascript">
             var tableValues = [];
             
+            function BodyOnLoad()
+            {
+                var tableQRCodes = document.getElementById('tableQRCodes');
+                var numberOfRows = tableQRCodes.rows.length;
+                for (var rowIndex=0; rowIndex<numberOfRows; rowIndex++)
+                {
+                    tableQRCodes.deleteRow(0);
+                }
+            }
+
             function PrintQRCode(thisManyQRCodeInOnePage)
             {
+                localStorage['HowManyQRCodesInOnePage'] = thisManyQRCodeInOnePage;
                 localStorage['GeneratedQRCodes'] = JSON.stringify(tableValues);
                 localStorage['qrCodeTable'] = document.getElementById('tableQRCodes').getElementsByTagName('tbody')[0].innerHTML;
                 localStorage['CodeSize'] = document.getElementById('selectQRCodeSize').options[document.getElementById('selectQRCodeSize').selectedIndex].value;
@@ -28,7 +39,7 @@
                     startIndex = onlyForThisOne;
                     endIndex = parseInt(startIndex) + 1;
                 }
-                console.log(isThisForAll, onlyForThisOne, startIndex, endIndex);
+                //console.log(isThisForAll, onlyForThisOne, startIndex, endIndex);
                 var qrCodeSizeIs = document.getElementById('selectQRCodeSize').options[document.getElementById('selectQRCodeSize').selectedIndex].value;
                 for (var qrCodeIndex=startIndex; qrCodeIndex<endIndex; qrCodeIndex++)
                 {
@@ -38,7 +49,21 @@
                     var txtPalletNumber = document.getElementById('txtPalletNumber_' + qrCodeIndex).value;
                     var txtGrossWeight = document.getElementById('txtGrossWeight_' + qrCodeIndex).value;
                     var txtNetWeight = document.getElementById('txtNetWeight_' + qrCodeIndex).value;
+
+                    var generatedQRCodes= localStorage['GeneratedQRCodes'];
+                    if (generatedQRCodes)
+                    {
+                        generatedQRCodes = JSON.parse(generatedQRCodes);
+                        //console.log('generatedQRCodes', generatedQRCodes);
+                        txtSupplierCode1 = generatedQRCodes[qrCodeIndex][0];
+                        txtSupplierCode2 = generatedQRCodes[qrCodeIndex][1];
+                        txtSupplierCode3 = generatedQRCodes[qrCodeIndex][2];
+                        txtPalletNumber = generatedQRCodes[qrCodeIndex][3];
+                        txtGrossWeight = generatedQRCodes[qrCodeIndex][4];
+                        txtNetWeight = generatedQRCodes[qrCodeIndex][5];
+                    }
                     qrtext = txtSupplierCode1 + '/' + txtSupplierCode2 + '/' + txtSupplierCode3 + '|' + txtPalletNumber + '|' + txtGrossWeight + '|' + txtNetWeight;
+                    //console.log('qrtext is ', qrtext, 'qrCodeIndex is ', qrCodeIndex);
                     qr = new QRious({
                         element: document.getElementById('qr_code_' + qrCodeIndex),
                         size: 200,
@@ -83,9 +108,11 @@
                 {
                     alert('Please enter the total number of QR Codes to generate');
                     document.getElementById('txtQRCodesCount').focus();
+                    document.getElementById('hidAlreadyGenerated').value = '0';
                     return;
                 }
 
+                localStorage.clear();
                 tableValues = [qrCodesCount];
 
                 var tableRef1 = document.getElementById('tableQRCodes').getElementsByTagName('tbody')[0];
@@ -228,7 +255,7 @@
                 //console.log('event is ', evt);
                 var sourceElements = evt.target.id.split('_');
                 var elementIndex = sourceElements[1];
-                GenerateQRCodeForAll(false, elementIndex);
+                // GenerateQRCodeForAll(false, elementIndex);
 
                 if (sourceElements[0] == 'txtSupplierCode')
                 {
@@ -255,7 +282,7 @@
 
                 //localStorage['GeneratedQRCodes'] = document.getElementById('tableQRCodes').getElementsByTagName('tbody')[0].innerHTML;
                 localStorage['GeneratedQRCodes'] = JSON.stringify(tableValues);
-
+                GenerateQRCodeForAll(false, elementIndex);
                 return false;
             }
 
@@ -273,7 +300,7 @@
             }
         </script>
     </head>
-    <body>
+    <body onload="javascript:BodyOnLoad();">
         <table id="tableMain" style="width: 100%; text-align: center;" border="0">
             <tr>
                 <td align="center">
@@ -356,7 +383,7 @@
                             <td colspan="2" style="text-align: center;">
                                 <input type="button" value="Generate QR Codes" id="btnGenerateQRCodes" onclick="javascript:GenerateQRCodes();" /> &nbsp;
                                 <input type="button" value="Print QR Codes - 1 per Page" id="btnPrintQRCodesOnePerPage" onclick="javascript:PrintQRCode(1);"/> &nbsp;
-                                <input type="button" value="Print QR Codes - 2 per Page" id="btnPrintQRCodesTwoPerPage" />
+                                <input type="button" value="Print QR Codes - 2 per Page" id="btnPrintQRCodesTwoPerPage" onclick="javascript:PrintQRCode(2);"/> &nbsp;
                             </td>
                         </tr>
                     </table>
@@ -372,7 +399,7 @@
                     <table id="tableQRCodes" border="0" style="background-color: bisque; padding: 2 2 2 2;">
                         <tr>
                             <td>
-                                <table style="background-color: white; padding: 2 2 2 2;">
+                                <!-- <table style="background-color: white; padding: 2 2 2 2;">
                                     <tr>
                                         <td colspan="2" style="text-align: center;">
                                             FOR INDUSTRIAL USE
@@ -380,7 +407,6 @@
                                     </tr>
                                     <tr>
                                         <td colspan="2" style="text-align: center;">
-                                            <!-- <img id="imgQRCode_1" src="OnlyQRCode.jpg" style="width: 200px; height: 200px;" /> -->
                                             <canvas id="qr_code_1"></canvas>
                                         </td>
                                     </tr>
@@ -420,7 +446,7 @@
                                             <input type="text" id="txtNetWeight_1" size="10" maxlength="10" onkeypress="javascript:return KeyPressedEvent(event)" /> Kgs
                                         </td>
                                     </tr>
-                                </table>
+                                </table> -->
                             </td>
                         </tr>
                     <table>
