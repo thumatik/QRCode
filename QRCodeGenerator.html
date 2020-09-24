@@ -21,7 +21,8 @@
                 localStorage['GeneratedQRCodes'] = JSON.stringify(tableValues);
                 localStorage['qrCodeTable'] = document.getElementById('tableQRCodes').getElementsByTagName('tbody')[0].innerHTML;
                 localStorage['CodeSize'] = document.getElementById('selectQRCodeSize').options[document.getElementById('selectQRCodeSize').selectedIndex].value;
-                window.open('QRCodePrinter.html');
+                //window.open('QRCodePrinter.html');
+		window.open('https://htmlpreview.github.io/?https://github.com/thumatik/QRCode/blob/master/QRCodePrinter.html
             }
 
             function GenerateQRCodeForAll(isThisForAll, onlyForThisOne) 
